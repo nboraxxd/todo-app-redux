@@ -1,4 +1,4 @@
-const initState = [
+export const initialTodoList = [
   {
     id: 1,
     name: 'Learn HTML',
@@ -48,21 +48,3 @@ const initState = [
     priority: 'Low',
   },
 ]
-
-const todoListReducer = (state = initState, action) => {
-  switch (action.type) {
-    case 'todoList/addTodo':
-      return [...state, action.payload]
-
-    case 'todoList/changeTodoStatus':
-      return state.map((item) =>
-        item.id === action.payload ? { ...item, completed: !item.completed } : item
-      )
-
-    default:
-      return state
-  }
-}
-
-export default todoListReducer
-
