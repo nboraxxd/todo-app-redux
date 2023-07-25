@@ -1,85 +1,68 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-
-const todoSlice = createSlice({
-  name: 'todoList',
-  initialState: { status: 'idle', todos: [] },
-  reducers: {
-    addTodo: (state, action) => {
-      state.todos.push(action.payload)
-    },
-
-    toggleTodoStatus: (state, action) => {
-      const currentTodo = state.todos.find((todo) => todo.id === action.payload)
-      currentTodo.completed = !currentTodo.completed
-    },
+const initState = [
+  {
+    id: 1,
+    name: 'Learn HTML',
+    completed: true,
+    priority: 'Low',
   },
-
-  extraReducers: (builder) => {
-    builder
-      .addCase(fetchTodos.pending, (state) => {
-        state.status = 'loading'
-      })
-      .addCase(fetchTodos.fulfilled, (state, action) => {
-        state.todos = action.payload
-        state.status = 'idle'
-      })
-      .addCase(addNewTodo.pending, (state) => {
-        state.status = 'loading'
-      })
-      .addCase(addNewTodo.fulfilled, (state, action) => {
-        state.todos.push(action.payload)
-        state.status = 'idle'
-      })
-      .addCase(updateTodoStatus.pending, (state) => {
-        state.status = 'loading'
-      })
-      .addCase(updateTodoStatus.fulfilled, (state, action) => {
-        const currentTodo = state.todos.find((todo) => todo.id === action.payload.id)
-        currentTodo.completed = action.payload.completed
-        state.status = 'idle'
-      })
+  {
+    id: 2,
+    name: 'Learn CSS',
+    completed: true,
+    priority: 'Medium',
   },
-})
+  {
+    id: 3,
+    name: 'Learn Javascript',
+    completed: false,
+    priority: 'High',
+  },
+  {
+    id: 4,
+    name: 'Learn ReactJS',
+    completed: false,
+    priority: 'High',
+  },
+  {
+    id: 5,
+    name: 'Learn NodeJS',
+    completed: false,
+    priority: 'High',
+  },
+  {
+    id: 6,
+    name: 'Sleep',
+    completed: true,
+    priority: 'High',
+  },
+  {
+    id: 7,
+    name: 'Practice Skateboard',
+    completed: false,
+    priority: 'Medium',
+  },
+  {
+    id: 8,
+    name: 'Hang out',
+    completed: true,
+    priority: 'Low',
+  },
+]
 
-export const fetchTodos = createAsyncThunk('todos/fetchTodos', async () => {
-  const res = await fetch('/api/todos')
-  const data = await res.json()
+const todoListReducer = (state = initState, action) => {
+  switch (action.type) {
+    case 'todoList/addTodo':
+      return [...state, action.payload]
 
-  return data.todos
-})
+    case 'todoList/changeTodoStatus':
+      return state.map((item) =>
+        item.id === action.payload ? { ...item, completed: !item.completed } : item
+      )
 
-export const addNewTodo = createAsyncThunk('todos/addNewTodo', async (newTodo) => {
-  const res = await fetch('/api/todos', {
-    method: 'POST',
-    body: JSON.stringify(newTodo),
-  })
-  const data = await res.json()
-  console.log('🥴 ~ addNewTodo ~ res:', data)
+    default:
+      return state
+  }
+}
 
-  return data.todos
-})
+export default todoListReducer
 
-export const updateTodoStatus = createAsyncThunk('todos/updateTodoStatus', async (currentTodo) => {
-  const res = await fetch('/api/updateTodo', {
-    method: 'POST',
-    body: JSON.stringify(currentTodo),
-  })
-  const data = await res.json()
-  console.log('🥴 ~ updateTodoStatus ~ dataUpdated:', data.todos)
-
-  return data.todos
-})
-
-export default todoSlice
-
-// export function addTodos(todo) {
-//   return function addTodosThunk(dispatch, getState) {
-//     console.log('[addTodoThunk]', getState())
-//     console.log(todo)
-//     // custom payload
-//     todo.name = 'Bao test cho hong phai Tung test'
-//     dispatch(todoSlice.actions.addTodo(todo))
-
-//     console.log('[addTodoThunk after]', getState())
-//   }
-// }
